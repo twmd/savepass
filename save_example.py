@@ -7,7 +7,9 @@
 #TODO: Добавить возможность замены пароля. Допустим по опциям командной строки или переменной в скрипте/файле конфигурации
 #TODO: привести к PEP8
 #TODO: Сделать пакетом, что бы подтягивал зависимости
-"""При первом запуске для каждого пользователя запрашивается пароль который сохраняется в keyring системы
+"""
+!!!!!Для работы без gui необходимо установить альтернативный keyring-backend. Как пример "sudo pip3 install keyrings.alt"
+При первом запуске для каждого пользователя запрашивается пароль который сохраняется в keyring системы
 при последующих запусках, если пароль существует, то операции выполняются автоматически."""
 
 import configparser
@@ -54,13 +56,13 @@ class OPTIONS:
         return ssh_config_dict
 
 
-class ASA_BACKUP:
+class Backup:
 
     def __init__(self, ssh_config_dict, ftp_config_dict):
         self.ssh_config_dict = ssh_config_dict
         self.ftp_config_dict = ftp_config_dict
 
-    def asa_backup(self):
+    def config_backup(self):
         cur_data = str(datetime.datetime.now().strftime("%Y-%m-%d_%H:%M"))
         cli_backup = 'copy /noconfirm run ftp://' + self.ftp_config_dict['user'] + ':' + self.ftp_config_dict[
             'password'] + '@' + self.ftp_config_dict['host'] + '/Backup_network_devices/12_cisco-asa/' + cur_data + '\n'
@@ -85,5 +87,5 @@ if __name__ == '__main__':
     ssh_config_dict['enable'] = Password('asa_en_pass', ssh_config_dict['user']).get_password()
     ftp_config_dict = OPTIONS('FTP').get_config()
     ftp_config_dict['password'] = Password('ftp_pass', ftp_config_dict['user']).get_password()
-    backup = ASA_BACKUP(ssh_config_dict, ftp_config_dict)
-    backup.asa_backup()
+    backup = Backup(ssh_config_dict, ftp_config_dict)
+    backup.config_backup()
