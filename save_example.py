@@ -108,21 +108,26 @@ class Backup:
             'password'] + '@' + self.ftp_config_dict['host'] + '/Backup_network_devices/12_cisco-asa/' + cur_data + '\n'
         ssh_client = paramiko.SSHClient()
         ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh_client.connect(hostname=self.ssh_config_dict['host'],
-                           username=self.ssh_config_dict['user'],
-                           password=self.ssh_config_dict['password'],
-                           look_for_keys=False,
-                           allow_agent=False)
-        with ssh_client.invoke_shell() as asa_ssh:
-            print(asa_ssh.recv(60000).decode('utf-8'))
-            asa_ssh.send('enable\n')
-            sleep(2)
-            print(asa_ssh.recv(60000).decode('utf-8'))
-            asa_ssh.send(self.ssh_config_dict['enable'] + '\n')
-            sleep(3)
-            print(asa_ssh.recv(60000).decode('utf-8'))
-            asa_ssh.send(cli_backup)
-            print(asa_ssh.recv(60000).decode('utf-8'))
+        try:
+            ssh_client.connect(hostname=self.ssh_config_dict['host'],
+                               username=self.ssh_config_dict['user'],
+                               password=self.ssh_config_dict['password'],
+                               look_for_keys=False,
+                               allow_agent=False)
+        except KeyError:
+            print('Неправильные параметры в конфигурационном файле. Невозможно подключиться по ssh')
+
+        else:
+            with ssh_client.invoke_shell() as asa_ssh:
+                print(asa_ssh.recv(60000).decode('utf-8'))
+                asa_ssh.send('enable\n')
+                sleep(2)
+                print(asa_ssh.recv(60000).decode('utf-8'))
+                asa_ssh.send(self.ssh_config_dict['enable'] + '\n')
+                sleep(3)
+                print(asa_ssh.recv(60000).decode('utf-8'))
+                asa_ssh.send(cli_backup)
+                print(asa_ssh.recv(60000).decode('utf-8'))
 
 
 if __name__ == '__main__':
