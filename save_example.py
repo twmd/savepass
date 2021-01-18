@@ -25,7 +25,7 @@ class Password:
     Если пароль для пользователя и системы отсутствует в системе, то необходимо его ввеси
     """
 
-    def __init__(self, service_name, user):
+    def __init__(self, service_name: str, user: str):
         self.user = user
         self.service_name = service_name
         self.password = ''
@@ -36,17 +36,17 @@ class Password:
                 prompt='Enter password for service {0} and user {1}:'.format(self.service_name, self.user))
             keyring.set_password(service_name, user, self.password)
 
-    def get_password(self):
+    def get_password(self) -> str:
         self.password = keyring.get_password(self.service_name, self.user)
         return self.password
 
 
 class OPTIONS:
-    def __init__(self, section):
+    def __init__(self, section: str):
         self.config_file = 'settings.ini'
         self.section = section
 
-    def get_config(self):
+    def get_config(self) -> dict:
         """Парсит конфигурационный фаил возвращает опции подключения к ssh"""
         config = configparser.ConfigParser()
         config.read(self.config_file)
@@ -58,7 +58,7 @@ class OPTIONS:
 
 class Backup:
 
-    def __init__(self, ssh_config_dict, ftp_config_dict):
+    def __init__(self, ssh_config_dict: dict, ftp_config_dict: dict):
         self.ssh_config_dict = ssh_config_dict
         self.ftp_config_dict = ftp_config_dict
 
@@ -73,6 +73,7 @@ class Backup:
                            password=self.ssh_config_dict['password'],
                            look_for_keys=False,
                            allow_agent=False)
+        #TODO: Добавить вывод в лог.
         with ssh_client.invoke_shell() as asa_ssh:
             asa_ssh.send('enable\n')
             sleep(2)
