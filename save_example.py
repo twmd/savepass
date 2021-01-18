@@ -63,7 +63,7 @@ class Password:
         """
         self._password = keyring.get_password(self._service_name, self._user)
         return self._password
-
+    
 
 class OPTIONS:
     def __init__(self, section: str):
@@ -123,16 +123,16 @@ class Backup:
             print('Неправильные параметры в конфигурационном файле. Невозможно подключиться по ssh')
 
         else:
-            with ssh_client.invoke_shell() as asa_ssh:
-                print(asa_ssh.recv(60000).decode('utf-8'))
-                asa_ssh.send('enable\n')
+            with ssh_client.invoke_shell() as ssh:
+                print(ssh.recv(60000).decode('utf-8'))
+                ssh.send('enable\n')
                 sleep(2)
-                print(asa_ssh.recv(60000).decode('utf-8'))
-                asa_ssh.send(self.ssh_config_dict['enable'] + '\n')
+                print(ssh.recv(60000).decode('utf-8'))
+                ssh.send(self.ssh_config_dict['enable'] + '\n')
                 sleep(3)
-                print(asa_ssh.recv(60000).decode('utf-8'))
-                asa_ssh.send(cli_backup)
-                print(asa_ssh.recv(60000).decode('utf-8'))
+                print(ssh.recv(60000).decode('utf-8'))
+                ssh.send(cli_backup)
+                print(ssh.recv(60000).decode('utf-8'))
 
 
 if __name__ == '__main__':
