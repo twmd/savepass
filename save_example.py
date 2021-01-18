@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#TODO: Добавить аннотации
 #TODO: Добавить обработчик исключений
 #TODO: сервисы вывести в константы, или в фаил конфигурации
 #TODO: Убрать явные привязки к оборудованиям, сервисам
 #TODO: Добавить возможность замены пароля. Допустим по опциям командной строки или переменной в скрипте/файле конфигурации
 #TODO: привести к PEP8
 #TODO: Сделать пакетом, что бы подтягивал зависимости
+
+__author__ = "Vyacheslav Sazanov <slava.sazanov@gmail.com>"
+__license__ = "GNU Lesser General Public License (LGPL)"
+
 """
 !!!!!Для работы без gui необходимо установить альтернативный keyring-backend. Как пример "sudo pip3 install keyrings.alt"
 При первом запуске для каждого пользователя запрашивается пароль который сохраняется в keyring системы
@@ -19,13 +22,21 @@ import paramiko
 import keyring
 from getpass import getpass
 
-
+#TODO: Добавить удаление, изменение паролей.
 class Password:
     """Класс для хранения паролей в keyring
-    Если пароль для пользователя и системы отсутствует в системе, то необходимо его ввеси
+    Если пароль для пользователя и сервиса отсутствует в системе, то необходимо его ввеси
     """
 
     def __init__(self, service_name: str, user: str):
+        """
+        При создании экзепляра класса, проверяет что пароль для сервиса и пользователя существует.
+        Иначе выдает запрос на ввод пароля.
+        :param service_name: str
+            Имя сервиса для сохранения паролей
+        :param user: str
+            Имя пользователя для сохранения паролей
+        """
         self.user = user
         self.service_name = service_name
         self.password = ''
@@ -37,17 +48,29 @@ class Password:
             keyring.set_password(service_name, user, self.password)
 
     def get_password(self) -> str:
+        """
+        :return: str
+            Возвращает пароль из keyring.
+        """
         self.password = keyring.get_password(self.service_name, self.user)
         return self.password
 
 
 class OPTIONS:
     def __init__(self, section: str):
+        """
+        :param section: str
+            Секция для чтения опций.
+        """
         self.config_file = 'settings.ini'
         self.section = section
 
     def get_config(self) -> dict:
-        """Парсит конфигурационный фаил возвращает опции подключения к ssh"""
+        """
+        Парсит конфигурационный фаил возвращает опции подключения к ssh
+        :return: dict
+            Возвращает словать в виде опция : значение
+        """
         config = configparser.ConfigParser()
         config.read(self.config_file)
         ssh_config_dict = {}
@@ -59,10 +82,20 @@ class OPTIONS:
 class Backup:
 
     def __init__(self, ssh_config_dict: dict, ftp_config_dict: dict):
+        """
+        :param ssh_config_dict:
+            Параметры подключения к ssh
+        :param ftp_config_dict:
+            Параметры подключения к ftp
+        """
         self.ssh_config_dict = ssh_config_dict
         self.ftp_config_dict = ftp_config_dict
 
     def config_backup(self):
+        """
+        Выполняет резервное копирование
+        :return:
+        """
         cur_data = str(datetime.datetime.now().strftime("%Y-%m-%d_%H:%M"))
         cli_backup = 'copy /noconfirm run ftp://' + self.ftp_config_dict['user'] + ':' + self.ftp_config_dict[
             'password'] + '@' + self.ftp_config_dict['host'] + '/Backup_network_devices/12_cisco-asa/' + cur_data + '\n'
@@ -83,10 +116,17 @@ class Backup:
 
 
 if __name__ == '__main__':
+    #Получение конфигурации для подключения к ASA
     ssh_config_dict = OPTIONS('ASA').get_config()
+    #Получение пароля для ssh
     ssh_config_dict['password'] = Password('asa_ssh_pass', ssh_config_dict['user']).get_password()
+    #Получение enable пароля
     ssh_config_dict['enable'] = Password('asa_en_pass', ssh_config_dict['user']).get_password()
+    #Получение конфигурации ftp
     ftp_config_dict = OPTIONS('FTP').get_config()
+    #Получение пароля ftp
     ftp_config_dict['password'] = Password('ftp_pass', ftp_config_dict['user']).get_password()
+    #Создание экземпляра класса Бекап
     backup = Backup(ssh_config_dict, ftp_config_dict)
+    #Запуск резервного копирования
     backup.config_backup()
