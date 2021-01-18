@@ -21,7 +21,7 @@ from time import sleep
 import paramiko
 import keyring
 from getpass import getpass
-
+import os
 #TODO: Добавить удаление, изменение паролей.
 class Password:
     """Класс для хранения паролей в keyring
@@ -78,13 +78,15 @@ class OPTIONS:
         :return: dict
             Возвращает словать в виде опция : значение
         """
-        config = configparser.ConfigParser()
-        config.read(self.config_file)
-        ssh_config_dict = {}
-        for key, value in config[self.section].items():
-            ssh_config_dict[key] = value
-        return ssh_config_dict
-
+        if os.path.isfile(self.config_file):
+            config = configparser.ConfigParser()
+            config.read(self.config_file)
+            ssh_config_dict = {}
+            for key, value in config[self.section].items():
+                ssh_config_dict[key] = value
+            return ssh_config_dict
+        else:
+            raise Exception('Отсутствует конфигурационный фаил')
 
 class Backup:
 
