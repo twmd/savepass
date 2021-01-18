@@ -37,23 +37,30 @@ class Password:
         :param user: str
             Имя пользователя для сохранения паролей
         """
-        self.user = user
-        self.service_name = service_name
-        self.password = ''
+        self._user = user
+        self._service_name = service_name
+        self._password = ''
         if keyring.get_password(service_name, user):
             pass
         else:
-            self.password = getpass(
-                prompt='Enter password for service {0} and user {1}:'.format(self.service_name, self.user))
-            keyring.set_password(service_name, user, self.password)
+            self._password = getpass(
+                prompt='Enter password for service {0} and user {1}:'.format(self._service_name, self._user))
+            self._set_password()
+
+    def _set_password(self):
+        """
+        Записывает пароль в keyring
+        :return:
+        """
+        keyring.set_password(self._service_name, self._user, self._password)
 
     def get_password(self) -> str:
         """
         :return: str
             Возвращает пароль из keyring.
         """
-        self.password = keyring.get_password(self.service_name, self.user)
-        return self.password
+        self._password = keyring.get_password(self._service_name, self._user)
+        return self._password
 
 
 class OPTIONS:
