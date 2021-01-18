@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#TODO: сервисы вывести в константы, или в фаил конфигурации
-#TODO: Убрать явные привязки к оборудованиям, сервисам
-#TODO: Добавить возможность замены пароля. Допустим по опциям командной строки или переменной в скрипте/файле конфигурации
-#TODO: привести к PEP8
-#TODO: Сделать пакетом, что бы подтягивал зависимости
+# TODO: сервисы вывести в константы, или в фаил конфигурации
+# TODO: Убрать явные привязки к оборудованиям, сервисам
+# TODO: Добавить возможность замены пароля.
+# TODO: привести к PEP8
+# TODO: Сделать пакетом, что бы подтягивал зависимости
 
 __author__ = "Vyacheslav Sazanov <slava.sazanov@gmail.com>"
 __license__ = "GNU Lesser General Public License (LGPL)"
 
 """
-!!!!!Для работы без gui необходимо установить альтернативный keyring-backend. Как пример "sudo pip3 install keyrings.alt"
+!!!!!Для работы без gui необходимо установить альтернативный keyring-backend. 
+Как пример "sudo pip3 install keyrings.alt"
 При первом запуске для каждого пользователя запрашивается пароль который сохраняется в keyring системы
 при последующих запусках, если пароль существует, то операции выполняются автоматически."""
 
@@ -21,7 +22,9 @@ import paramiko
 import keyring
 from getpass import getpass
 import os
-#TODO: Добавить удаление, изменение паролей.
+
+
+# TODO: Добавить удаление, изменение паролей.
 class Password:
     """Класс для хранения паролей в keyring
     Если пароль для пользователя и сервиса отсутствует в системе, то необходимо его ввеси
@@ -87,6 +90,7 @@ class OPTIONS:
         else:
             raise Exception('Отсутствует конфигурационный фаил')
 
+
 class Backup:
 
     def __init__(self, ssh_config_dict: dict, ftp_config_dict: dict):
@@ -132,17 +136,17 @@ class Backup:
 
 
 if __name__ == '__main__':
-    #Получение конфигурации для подключения к ASA
+    # Получение конфигурации для подключения к ASA
     ssh_config_dict = OPTIONS('ASA').get_config()
-    #Получение пароля для ssh
+    # Получение пароля для ssh
     ssh_config_dict['password'] = Password('asa_ssh_pass', ssh_config_dict['user']).get_password()
-    #Получение enable пароля
+    # Получение enable пароля
     ssh_config_dict['enable'] = Password('asa_en_pass', ssh_config_dict['user']).get_password()
-    #Получение конфигурации ftp
+    # Получение конфигурации ftp
     ftp_config_dict = OPTIONS('FTP').get_config()
-    #Получение пароля ftp
+    # Получение пароля ftp
     ftp_config_dict['password'] = Password('ftp_pass', ftp_config_dict['user']).get_password()
-    #Создание экземпляра класса Бекап
+    # Создание экземпляра класса Бекап
     backup = Backup(ssh_config_dict, ftp_config_dict)
-    #Запуск резервного копирования
+    # Запуск резервного копирования
     backup.config_backup()
