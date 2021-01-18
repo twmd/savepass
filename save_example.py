@@ -71,7 +71,7 @@ class OPTIONS:
         :param section: str
             Секция для чтения опций.
         """
-        self.config_file = 'settings.ini'
+        self.CONFIG_FILE = 'settings.ini'
         self.section = section
 
     def get_config(self) -> dict:
@@ -80,9 +80,9 @@ class OPTIONS:
         :return: dict
             Возвращает словать в виде опция : значение
         """
-        if os.path.isfile(self.config_file):
+        if os.path.isfile(self.CONFIG_FILE):
             config = configparser.ConfigParser()
-            config.read(self.config_file)
+            config.read(self.CONFIG_FILE)
             ssh_config_dict = {}
             for key, value in config[self.section].items():
                 ssh_config_dict[key] = value
