@@ -106,13 +106,16 @@ class Backup:
                            password=self.ssh_config_dict['password'],
                            look_for_keys=False,
                            allow_agent=False)
-        #TODO: Добавить вывод в лог.
         with ssh_client.invoke_shell() as asa_ssh:
+            print(asa_ssh.recv(60000).decode('utf-8'))
             asa_ssh.send('enable\n')
             sleep(2)
+            print(asa_ssh.recv(60000).decode('utf-8'))
             asa_ssh.send(self.ssh_config_dict['enable'] + '\n')
             sleep(3)
+            print(asa_ssh.recv(60000).decode('utf-8'))
             asa_ssh.send(cli_backup)
+            print(asa_ssh.recv(60000).decode('utf-8'))
 
 
 if __name__ == '__main__':
