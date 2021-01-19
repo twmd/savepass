@@ -6,5 +6,5 @@ setup(name='savepass',
       author='Vyacheslav Sazanov',
       author_email='slava.sazanov@gmail.com',
       packages=['savepass'],
-      install_requires=['paramiko', 'keyring', 'getpass']
+      install_requires=['paramiko', 'keyring', 'getpass', 'keyrings.alt']
       )
