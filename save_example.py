@@ -7,7 +7,6 @@
 # TODO: Сделать пакетом, что бы подтягивал зависимости
 
 __author__ = "Vyacheslav Sazanov <slava.sazanov@gmail.com>"
-__license__ = "GNU Lesser General Public License (LGPL)"
 
 """
 !!!!!Для работы без gui необходимо установить альтернативный keyring-backend. 
